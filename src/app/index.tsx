@@ -1,9 +1,12 @@
 import {View,Text,Image,ActivityIndicator} from "react-native";
+import { Pressable } from "react-native";
+import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "@/constants/colors";
 import { typography } from "@/constants/typography";
 
 export default function HomeScreen() {
+    const router = useRouter();
   return (
     <SafeAreaView className="flex-1 bg-mint">
       <View className="flex-1 items-center justify-center px-6">
@@ -49,19 +52,20 @@ export default function HomeScreen() {
         </Text>
 
         {/* Loading indicator */}
-        <View className="absolute bottom-10 items-center">
-          <ActivityIndicator
-            size="small"
-            color={COLORS.green}
-          />
-
-          <Text
-            style={{ fontFamily: typography.regular }}
-            className="text-darkGreen text-xs mt-3"
-          >
-            Your reading journey starts here...
-          </Text>
-        </View>
+       {/* Get Started Button */}
+       <View className="absolute bottom-10 w-full px-6">
+         <Pressable
+           onPress={() => router.push("/login")}
+           className="bg-green rounded-full py-4 items-center"
+         >
+           <Text
+             style={{ fontFamily: typography.semiBold }}
+             className="text-white text-base"
+           >
+             Get Started
+           </Text>
+         </Pressable>
+       </View>
 
       </View>
     </SafeAreaView>
