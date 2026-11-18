@@ -1,10 +1,12 @@
 
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 import {
   getLibraryBooks,
   updateBookStatus,
   updateReadingProgress,
+  deleteBookFromLibrary,
 } from "@/services/libraryService";
 
 import { LibraryBook, ReadingStatus } from "@/models/Book";
@@ -111,6 +113,48 @@ export function useLibraryController() {
     }
   };
 
+  // Delete a book with confirmation
+  const handleDeleteBook = (bookId: string, bookTitle: string) => {
+    Alert.alert(
+      "Delete Book",
+      `Are you sure you want to remove "${bookTitle}" from your library?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setUpdatingBookId(bookId);
+              setError("");
+
+              await deleteBookFromLibrary(bookId);
+
+              setBooks((previousBooks) =>
+                previousBooks.filter((book) => book.id !== bookId)
+              );
+
+              Alert.alert("Deleted", "Book removed from your library.");
+            } catch (err) {
+              console.log("Book deletion error:", err);
+              Alert.alert(
+                "Delete Failed",
+                err instanceof Error
+                  ? err.message
+                  : "Unable to delete this book."
+              );
+            } finally {
+              setUpdatingBookId("");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const filteredBooks =
     activeFilter === "All"
       ? books
@@ -136,6 +180,7 @@ export function useLibraryController() {
     loadBooks,
     handleStatusChange,
     handleProgressChange,
+    handleDeleteBook,
     updatingBookId,
   };
 }

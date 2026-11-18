@@ -6,6 +6,7 @@ import {
   collection,
   getDocs,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { auth, db } from "@/config/firebase";
@@ -83,6 +84,10 @@ export const getLibraryBooks = async (): Promise<LibraryBook[]> => {
       readingStatus: data.readingStatus,
       currentPage: Number(data.currentPage ?? 0),
       totalPages: Number(data.totalPages ?? 0),
+      updatedAt:
+        data.updatedAt?.toMillis?.() ??
+        data.savedAt?.toMillis?.() ??
+        0,
     };
   });
 };
@@ -157,4 +162,25 @@ export const updateReadingProgress = async (
   });
 
   return nextStatus;
+};
+
+// Delete a book from the user's library
+export const deleteBookFromLibrary = async (bookId: string) => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("Please log in to delete books.");
+  }
+
+  const safeBookId = bookId.replace(/\//g, "_");
+
+  const bookRef = doc(
+    db,
+    "users",
+    user.uid,
+    "library",
+    safeBookId
+  );
+
+  await deleteDoc(bookRef);
 };

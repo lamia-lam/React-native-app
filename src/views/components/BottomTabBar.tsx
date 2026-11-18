@@ -1,9 +1,8 @@
 
-import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
 import { COLORS } from "@/constants/colors";
 import { typography } from "@/constants/typography";
+import { useRouter } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type TabName = "home" | "discover" | "library" | "profile";
 

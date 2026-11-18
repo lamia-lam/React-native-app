@@ -62,6 +62,7 @@ export default function ProfileView({
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.heading}>My Profile 👤</Text>
         <Text style={styles.subtitle}>
@@ -70,6 +71,7 @@ export default function ProfileView({
       </View>
 
       <View style={styles.content}>
+        {/* Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
@@ -88,6 +90,7 @@ export default function ProfileView({
           </Text>
         </View>
 
+        {/* Reading Statistics */}
         <Text style={styles.sectionTitle}>
           Reading Statistics 📚
         </Text>
@@ -128,11 +131,11 @@ export default function ProfileView({
           </View>
         )}
 
-        <Text style={styles.sectionTitle}>
-          Menu
-        </Text>
+        {/* Menu */}
+        <Text style={styles.sectionTitle}>Menu</Text>
 
         <View style={styles.menuCard}>
+          {/* Edit Profile */}
           <Pressable
             style={({ pressed }) => [
               styles.menuRow,
@@ -140,15 +143,18 @@ export default function ProfileView({
             ]}
             onPress={onEditProfile}
           >
-            <Text style={styles.menuIcon}>✏️</Text>
-            <Text style={styles.menuLabel}>
-              Edit Profile
+           <Text style={[styles.menuLabel, { marginTop: 15 }]}>
+             Edit Profile
+           </Text>
+
+            <Text style={[styles.chevron, { transform: [{ translateY: -27 }] }]}>
+              ›
             </Text>
-            <Text style={styles.chevron}>›</Text>
           </Pressable>
 
           <View style={styles.menuDivider} />
 
+          {/* Log Out */}
           <Pressable
             style={({ pressed }) => [
               styles.menuRow,
@@ -158,11 +164,13 @@ export default function ProfileView({
             onPress={confirmLogout}
             disabled={isLoggingOut}
           >
-            <Text style={styles.menuIcon}>🚪</Text>
             <Text style={styles.menuLabel}>
               {isLoggingOut ? "Logging out..." : "Log Out"}
             </Text>
-            <Text style={styles.chevron}>›</Text>
+
+            <Text style={[styles.chevron, { transform: [{ translateY: -24 }] }]}>
+              ›
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -177,26 +185,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+
   header: {
     paddingHorizontal: 22,
     paddingTop: 15,
     paddingBottom: 18,
   },
+
   heading: {
     fontFamily: typography.bold,
     fontSize: 25,
     color: COLORS.darkGreen,
   },
+
   subtitle: {
     fontFamily: typography.regular,
     fontSize: 13,
     color: COLORS.gray,
     marginTop: 5,
   },
+
   content: {
     flex: 1,
     paddingHorizontal: 20,
   },
+
   profileCard: {
     backgroundColor: COLORS.white,
     borderRadius: 18,
@@ -205,6 +218,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
+
   avatar: {
     width: 76,
     height: 76,
@@ -213,29 +227,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   avatarText: {
     fontFamily: typography.bold,
     fontSize: 30,
     color: COLORS.darkGreen,
   },
+
   name: {
     fontFamily: typography.bold,
     fontSize: 20,
     color: COLORS.darkGreen,
     marginTop: 12,
   },
+
   email: {
     fontFamily: typography.regular,
     fontSize: 13,
     color: COLORS.gray,
     marginTop: 5,
   },
+
   memberLabel: {
     fontFamily: typography.medium,
     fontSize: 11,
     color: COLORS.primary,
     marginTop: 9,
   },
+
   sectionTitle: {
     fontFamily: typography.semiBold,
     fontSize: 16,
@@ -243,10 +262,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 12,
   },
+
   statsContainer: {
     flexDirection: "row",
     gap: 10,
   },
+
   statCard: {
     flex: 1,
     backgroundColor: COLORS.white,
@@ -256,11 +277,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
+
   statNumber: {
     fontFamily: typography.bold,
     fontSize: 23,
     color: COLORS.primary,
   },
+
   statLabel: {
     fontFamily: typography.medium,
     fontSize: 10,
@@ -268,39 +291,51 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: "center",
   },
+
   menuCard: {
     backgroundColor: COLORS.white,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: COLORS.border,
     paddingHorizontal: 15,
+    overflow: "hidden",
   },
+
   menuRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 16,
+    width: "100%",
+    minHeight: 58,
+    paddingHorizontal: 5,
   },
+
   menuPressed: {
     opacity: 0.6,
   },
-  menuIcon: {
-    fontSize: 20,
-    width: 35,
-  },
+
   menuLabel: {
-    flex: 1,
-    fontFamily: typography.medium,
-    fontSize: 14,
-    color: COLORS.darkGreen,
+    flexGrow: 0,
+    flexShrink: 0,
+    fontSize: 20,
+    paddingTop:10,
+    fontWeight: "600",
+    color: "#174A36",
+    textAlign: "left",
+    includeFontPadding: false,
   },
+
   chevron: {
-    fontSize: 27,
+    marginLeft: "auto",
+    fontSize: 29,
     color: COLORS.gray,
+    includeFontPadding: false,
   },
+
   menuDivider: {
     height: 1,
     backgroundColor: COLORS.border,
   },
+
   disabledButton: {
     opacity: 0.5,
   },

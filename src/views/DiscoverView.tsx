@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   View,
@@ -25,6 +26,8 @@ interface DiscoverViewProps {
   trendingBooks: Book[];
   isLoadingTrending: boolean;
   categories: string[];
+  selectedCategory: string | null;
+  handleCategoryPress: (category: string) => void;
   handleTabPress: (tab: string) => void;
 }
 
@@ -37,6 +40,8 @@ export default function DiscoverView({
   trendingBooks,
   isLoadingTrending,
   categories,
+  selectedCategory,
+  handleCategoryPress,
   handleTabPress,
   openBookDetails,
 }: DiscoverViewProps) {
@@ -75,20 +80,43 @@ export default function DiscoverView({
         </View>
 
         <View style={styles.categoryContainer}>
-          {categories.map((category) => (
-            <Pressable key={category} style={styles.categoryChip}>
-              <Text style={styles.categoryText}>{category}</Text>
-            </Pressable>
-          ))}
+          {categories.map((category) => {
+            const isSelected = selectedCategory === category;
+
+            return (
+              <Pressable
+                key={category}
+                onPress={() => handleCategoryPress(category)}
+                style={[
+                  styles.categoryChip,
+                  isSelected && styles.selectedCategoryChip,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    isSelected && styles.selectedCategoryText,
+                  ]}
+                >
+                  {category}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
-        {/* Search Results */}
+        {/* Search and Category Results */}
         {isSearching ? (
           <Text style={styles.subtitle}>Searching books...</Text>
         ) : searchQuery.trim() !== "" ? (
           <View>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Search Results</Text>
+              <Text style={styles.sectionTitle}>
+                {selectedCategory
+                  ? `${selectedCategory} Books`
+                  : "Search Results"}
+              </Text>
+
               {searchResults.length > 0 && (
                 <Text style={styles.resultCount}>
                   {searchResults.length} books found
@@ -98,15 +126,15 @@ export default function DiscoverView({
 
             {searchResults.length > 0 ? (
               searchResults.map((book) => (
-               <BookCard
-                 key={book.id}
-                 book={book}
-                 onPress={() => openBookDetails(book)}
-               />
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  onPress={() => openBookDetails(book)}
+                />
               ))
             ) : (
               <Text style={styles.subtitle}>
-                No books found. Try another title or author.
+                No books found. Try another category or search.
               </Text>
             )}
           </View>
@@ -166,7 +194,10 @@ export default function DiscoverView({
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <BottomTabBar activeTab="discover" onTabPress={handleTabPress} />
+      <BottomTabBar
+        activeTab="discover"
+        onTabPress={handleTabPress}
+      />
     </SafeAreaView>
   );
 }
@@ -264,10 +295,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 
+  selectedCategoryChip: {
+    backgroundColor: COLORS.primary,
+  },
+
   categoryText: {
     fontFamily: typography.medium,
     fontSize: 12,
     color: COLORS.darkGreen,
+  },
+
+  selectedCategoryText: {
+    color: COLORS.white,
   },
 
   bookList: {

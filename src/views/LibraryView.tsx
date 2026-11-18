@@ -36,6 +36,10 @@ interface LibraryViewProps {
     currentPage: number,
     totalPages: number
   ) => Promise<void>;
+  handleDeleteBook: (
+    bookId: string,
+    bookTitle: string
+  ) => void;
   updatingBookId: string;
 }
 
@@ -178,11 +182,14 @@ export default function LibraryView({
   error,
   handleStatusChange,
   handleProgressChange,
+  handleDeleteBook,
   updatingBookId,
 }: LibraryViewProps) {
 
   const renderBook = ({ item }: { item: LibraryBook }) => (
     <View style={styles.bookCard}>
+
+      {/* Book Details */}
       <View style={styles.bookTopRow}>
         {item.coverUrl ? (
           <Image
@@ -245,6 +252,7 @@ export default function LibraryView({
         </View>
       </View>
 
+      {/* Reading Progress */}
       {item.readingStatus === "Reading" && (
         <ReadingProgressEditor
           key={`${item.id}-${item.currentPage}-${item.totalPages}`}
@@ -254,12 +262,12 @@ export default function LibraryView({
         />
       )}
 
+      {/* Completed Progress */}
       {item.readingStatus === "Completed" &&
         item.totalPages > 0 && (
           <View style={styles.completedProgress}>
             <Text style={styles.progressHeading}>
-              <Text>Reading Progress: </Text>
-              100%
+              Reading Progress: 100%
             </Text>
 
             <View style={styles.progressBarBackground}>
@@ -273,13 +281,25 @@ export default function LibraryView({
           </View>
         )}
 
-      {updatingBookId === item.id && (
-        <ActivityIndicator
-          size="small"
-          color={COLORS.primary}
-          style={styles.updateLoader}
-        />
-      )}
+      {/* Delete Icon - Top Right Corner */}
+      <Pressable
+        style={[
+          styles.deleteIconButton,
+          updatingBookId === item.id && styles.disabledButton,
+        ]}
+        onPress={() => handleDeleteBook(item.id, item.title)}
+        disabled={updatingBookId === item.id}
+      >
+        {updatingBookId === item.id ? (
+          <ActivityIndicator
+            size="small"
+            color={COLORS.error}
+          />
+        ) : (
+          <Text style={styles.deleteIcon}>🗑️</Text>
+        )}
+      </Pressable>
+
     </View>
   );
 
@@ -292,6 +312,7 @@ export default function LibraryView({
         </Text>
       </View>
 
+      {/* Filters */}
       <View style={styles.filterContainer}>
         {filterOptions.map((filter) => (
           <Pressable
@@ -314,6 +335,7 @@ export default function LibraryView({
         ))}
       </View>
 
+      {/* Book List */}
       {isLoading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={COLORS.primary} />
@@ -414,6 +436,7 @@ const styles = StyleSheet.create({
     marginBottom: 13,
     borderWidth: 1,
     borderColor: COLORS.border,
+    position: "relative",
   },
   bookTopRow: {
     flexDirection: "row",
@@ -437,6 +460,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 14,
     justifyContent: "center",
+    paddingRight: 28,
   },
   bookTitle: {
     fontFamily: typography.semiBold,
@@ -556,6 +580,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.white,
   },
+  deleteIconButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#FCEAEA",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
+  },
+  deleteIcon: {
+    fontSize: 16,
+  },
   disabledButton: {
     opacity: 0.6,
   },
@@ -570,10 +609,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-  },
-  updateLoader: {
-    marginTop: 8,
-    alignSelf: "center",
   },
   center: {
     flex: 1,

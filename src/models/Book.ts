@@ -32,6 +32,7 @@ export interface LibraryBook {
   readingStatus: ReadingStatus;
   currentPage: number;
   totalPages: number;
+  updatedAt?: number;
 }
 
 
