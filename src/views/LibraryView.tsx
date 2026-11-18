@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,9 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LibraryBook, ReadingStatus } from "@/models/Book";
 import { COLORS } from "@/constants/colors";
@@ -29,7 +31,142 @@ interface LibraryViewProps {
     bookId: string,
     newStatus: ReadingStatus
   ) => void;
+  handleProgressChange: (
+    bookId: string,
+    currentPage: number,
+    totalPages: number
+  ) => Promise<void>;
   updatingBookId: string;
+}
+
+// Reading progress editor
+function ReadingProgressEditor({
+  book,
+  onSave,
+  isUpdating,
+}: {
+  book: LibraryBook;
+  onSave: (
+    bookId: string,
+    currentPage: number,
+    totalPages: number
+  ) => Promise<void>;
+  isUpdating: boolean;
+}) {
+  const [currentPage, setCurrentPage] = useState(
+    String(book.currentPage ?? 0)
+  );
+
+  const [totalPages, setTotalPages] = useState(
+    String(book.totalPages ?? 0)
+  );
+
+  const [localError, setLocalError] = useState("");
+
+  const percentage =
+    Number(totalPages) > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (Number(currentPage) / Number(totalPages)) * 100
+          )
+        )
+      : 0;
+
+  const saveProgress = async () => {
+    const current = Number(currentPage);
+    const total = Number(totalPages);
+
+    if (
+      currentPage.trim() === "" ||
+      totalPages.trim() === "" ||
+      !Number.isInteger(current) ||
+      !Number.isInteger(total) ||
+      total <= 0 ||
+      current < 0 ||
+      current > total
+    ) {
+      setLocalError("Please enter valid page numbers.");
+      return;
+    }
+
+    setLocalError("");
+    await onSave(book.id, current, total);
+  };
+
+  return (
+    <View style={styles.progressContainer}>
+      <Text style={styles.progressHeading}>
+        Reading Progress
+      </Text>
+
+      <View style={styles.progressDetails}>
+        <Text style={styles.progressPageText}>
+          {Number(currentPage) || 0} / {Number(totalPages) || 0} pages
+        </Text>
+
+        <Text style={styles.progressPercentage}>
+          {percentage}%
+        </Text>
+      </View>
+
+      <View style={styles.progressBarBackground}>
+        <View
+          style={[
+            styles.progressBarFill,
+            { width: `${percentage}%` },
+          ]}
+        />
+      </View>
+
+      <View style={styles.pageInputRow}>
+        <View style={styles.pageInputGroup}>
+          <Text style={styles.inputLabel}>Current Page</Text>
+          <TextInput
+            style={styles.pageInput}
+            value={currentPage}
+            onChangeText={setCurrentPage}
+            keyboardType="number-pad"
+            placeholder="0"
+            placeholderTextColor={COLORS.gray}
+          />
+        </View>
+
+        <View style={styles.pageInputGroup}>
+          <Text style={styles.inputLabel}>Total Pages</Text>
+          <TextInput
+            style={styles.pageInput}
+            value={totalPages}
+            onChangeText={setTotalPages}
+            keyboardType="number-pad"
+            placeholder="300"
+            placeholderTextColor={COLORS.gray}
+          />
+        </View>
+      </View>
+
+      {localError !== "" && (
+        <Text style={styles.inputError}>{localError}</Text>
+      )}
+
+      <Pressable
+        style={[
+          styles.saveProgressButton,
+          isUpdating && styles.disabledButton,
+        ]}
+        onPress={saveProgress}
+        disabled={isUpdating}
+      >
+        {isUpdating ? (
+          <ActivityIndicator color={COLORS.white} size="small" />
+        ) : (
+          <Text style={styles.saveProgressText}>
+            Save Progress
+          </Text>
+        )}
+      </Pressable>
+    </View>
+  );
 }
 
 export default function LibraryView({
@@ -40,36 +177,42 @@ export default function LibraryView({
   isLoading,
   error,
   handleStatusChange,
+  handleProgressChange,
   updatingBookId,
 }: LibraryViewProps) {
+
   const renderBook = ({ item }: { item: LibraryBook }) => (
     <View style={styles.bookCard}>
-      {item.coverUrl ? (
-        <Image
-          source={{ uri: item.coverUrl }}
-          style={styles.cover}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={[styles.cover, styles.noCover]}>
-          <Text style={styles.noCoverText}>No Cover</Text>
-        </View>
-      )}
+      <View style={styles.bookTopRow}>
+        {item.coverUrl ? (
+          <Image
+            source={{ uri: item.coverUrl }}
+            style={styles.cover}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.cover, styles.noCover]}>
+            <Text style={styles.noCoverText}>No Cover</Text>
+          </View>
+        )}
 
-      <View style={styles.bookInfo}>
-        <Text style={styles.bookTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
+        <View style={styles.bookInfo}>
+          <Text style={styles.bookTitle} numberOfLines={2}>
+            {item.title}
+          </Text>
 
-        <Text style={styles.author} numberOfLines={1}>
-          {item.author}
-        </Text>
+          <Text style={styles.author} numberOfLines={1}>
+            {item.author}
+          </Text>
 
-        <Text style={styles.statusLabel}>Reading Status</Text>
+          <Text style={styles.statusLabel}>
+            Reading Status
+          </Text>
 
-        <View style={styles.statusOptions}>
-          {(["Want to Read", "Reading", "Completed"] as ReadingStatus[]).map(
-            (status) => {
+          <View style={styles.statusOptions}>
+            {(
+              ["Want to Read", "Reading", "Completed"] as ReadingStatus[]
+            ).map((status) => {
               const isSelected = item.readingStatus === status;
               const isUpdating = updatingBookId === item.id;
 
@@ -97,18 +240,46 @@ export default function LibraryView({
                   </Text>
                 </Pressable>
               );
-            }
-          )}
+            })}
+          </View>
         </View>
-
-        {updatingBookId === item.id && (
-          <ActivityIndicator
-            size="small"
-            color={COLORS.primary}
-            style={styles.updateLoader}
-          />
-        )}
       </View>
+
+      {item.readingStatus === "Reading" && (
+        <ReadingProgressEditor
+          key={`${item.id}-${item.currentPage}-${item.totalPages}`}
+          book={item}
+          onSave={handleProgressChange}
+          isUpdating={updatingBookId === item.id}
+        />
+      )}
+
+      {item.readingStatus === "Completed" &&
+        item.totalPages > 0 && (
+          <View style={styles.completedProgress}>
+            <Text style={styles.progressHeading}>
+              <Text>Reading Progress: </Text>
+              100%
+            </Text>
+
+            <View style={styles.progressBarBackground}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: "100%" },
+                ]}
+              />
+            </View>
+          </View>
+        )}
+
+      {updatingBookId === item.id && (
+        <ActivityIndicator
+          size="small"
+          color={COLORS.primary}
+          style={styles.updateLoader}
+        />
+      )}
     </View>
   );
 
@@ -146,7 +317,9 @@ export default function LibraryView({
       {isLoading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.message}>Loading your books...</Text>
+          <Text style={styles.message}>
+            Loading your books...
+          </Text>
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -173,6 +346,7 @@ export default function LibraryView({
           renderItem={renderBook}
           contentContainerStyle={styles.bookList}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         />
       )}
 
@@ -234,13 +408,15 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   bookCard: {
-    flexDirection: "row",
     backgroundColor: COLORS.white,
     borderRadius: 15,
     padding: 12,
     marginBottom: 13,
     borderWidth: 1,
     borderColor: COLORS.border,
+  },
+  bookTopRow: {
+    flexDirection: "row",
   },
   cover: {
     width: 75,
@@ -285,7 +461,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 7,
   },
-
   statusOption: {
     paddingHorizontal: 12,
     paddingVertical: 9,
@@ -294,24 +469,111 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
-
   selectedStatus: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
-
   statusOptionText: {
     fontFamily: typography.medium,
     fontSize: 11,
     color: COLORS.darkGreen,
   },
-
   selectedStatusText: {
     color: COLORS.white,
   },
+  progressContainer: {
+    marginTop: 18,
+    paddingTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  progressHeading: {
+    fontFamily: typography.semiBold,
+    fontSize: 13,
+    color: COLORS.darkGreen,
+    marginBottom: 9,
+  },
+  progressDetails: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 7,
+  },
+  progressPageText: {
+    fontFamily: typography.regular,
+    fontSize: 11,
+    color: COLORS.gray,
+  },
+  progressPercentage: {
+    fontFamily: typography.semiBold,
+    fontSize: 11,
+    color: COLORS.primary,
+  },
+  progressBarBackground: {
+    height: 8,
+    backgroundColor: COLORS.background,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: COLORS.primary,
+    borderRadius: 10,
+  },
+  pageInputRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 14,
+  },
+  pageInputGroup: {
+    flex: 1,
+  },
+  inputLabel: {
+    fontFamily: typography.medium,
+    fontSize: 11,
+    color: COLORS.darkGreen,
+    marginBottom: 6,
+  },
+  pageInput: {
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    fontFamily: typography.regular,
+    fontSize: 13,
+    color: COLORS.darkGreen,
+  },
+  saveProgressButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 12,
+    paddingVertical: 11,
+    alignItems: "center",
+    marginTop: 12,
+  },
+  saveProgressText: {
+    fontFamily: typography.semiBold,
+    fontSize: 12,
+    color: COLORS.white,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  inputError: {
+    color: COLORS.error,
+    fontFamily: typography.regular,
+    fontSize: 11,
+    marginTop: 7,
+  },
+  completedProgress: {
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
   updateLoader: {
-    marginTop: 5,
-    alignSelf: "flex-start",
+    marginTop: 8,
+    alignSelf: "center",
   },
   center: {
     flex: 1,
