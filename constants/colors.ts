@@ -9,4 +9,8 @@ export const COLORS = {
   gray: "#8A9A91",
   border: "#DCEBDD",
   error: "#DC5252",
+
+  // Semantic aliases
+  primary: "#4CA771",
+  background: "#EAF9E7",
 } as const;

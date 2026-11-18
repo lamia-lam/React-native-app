@@ -1,29 +1,13 @@
+import {
+  Book,
+  OpenLibraryBook,
+  TrendingResponse,
+  SearchResponse,
+} from "@/models/Book";
+
+export type { Book };
 
 const BASE_URL = "https://openlibrary.org";
-
-export interface Book {
-  id: string;
-  title: string;
-  author: string;
-  coverUrl: string | null;
-  publishYear?: number;
-}
-
-interface OpenLibraryBook {
-  key: string;
-  title: string;
-  author_name?: string[];
-  cover_i?: number;
-  first_publish_year?: number;
-}
-
-interface TrendingResponse {
-  works: OpenLibraryBook[];
-}
-
-interface SearchResponse {
-  docs: OpenLibraryBook[];
-}
 
 // Convert Open Library data into our Book format
 const formatBook = (item: OpenLibraryBook): Book => ({
@@ -68,4 +52,29 @@ export const searchBooks = async (
   const data: SearchResponse = await response.json();
 
   return (data.docs || []).map(formatBook);
+};
+// Get full details of a selected book
+export const getBookDetails = async (bookId: string) => {
+  const formattedId = bookId.replace("/works/", "");
+
+  const response = await fetch(
+    `${BASE_URL}/works/${formattedId}.json`
+  );
+
+  if (!response.ok) {
+    throw new Error("Unable to fetch book details.");
+  }
+
+  const data = await response.json();
+
+  return {
+    id: bookId,
+    title: data.title || "Unknown Title",
+    description:
+      typeof data.description === "string"
+        ? data.description
+        : data.description?.value || "No description available.",
+    subjects: data.subjects || [],
+    firstPublishDate: data.first_publish_date || "Not available",
+  };
 };
