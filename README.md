@@ -1,4 +1,4 @@
-# BookBuddy 📚
+# BookBuddy
 
 ### Read • Track • Achieve
 
@@ -6,15 +6,16 @@ BookBuddy is a personal reading companion mobile application built with **React 
 
 ---
 
-## 📱 About BookBuddy
+## About BookBuddy
 
 BookBuddy provides a simple and organized way to manage your reading journey. Users can search for books using the Open Library API, save books to their personal library, organize them by reading status, and track their reading progress.
 
 The application follows an MVC-inspired architecture to separate the user interface, application logic, data models, and data access responsibilities.
 
-## ✨ Key Features
+## Key Features
 
 ### 1. Authentication & User Profiles
+
 - User registration and login using Firebase Authentication.
 - User profile information stored in Cloud Firestore.
 - Dedicated profile screen.
@@ -22,6 +23,7 @@ The application follows an MVC-inspired architecture to separate the user interf
 - Logout with confirmation.
 
 ### 2. Home Dashboard
+
 - Personalized welcome greeting.
 - Reading statistics, including total books and completed books.
 - Continue Reading section showing the most recently updated book in progress.
@@ -29,6 +31,7 @@ The application follows an MVC-inspired architecture to separate the user interf
 - Recommended and trending books from Open Library.
 
 ### 3. Discover & Search Books
+
 - Search for books by title or author.
 - Book discovery powered by the Open Library API.
 - Category and genre filtering.
@@ -36,11 +39,13 @@ The application follows an MVC-inspired architecture to separate the user interf
 - Loading and error handling when the book service is unavailable.
 
 ### 4. Book Details & Library Management
+
 - View available book information, including title, author, cover, and publication year.
 - Add discovered books to a personal library.
 - Choose a reading status when adding a book.
 
 ### 5. Personal Reading Library
+
 - View saved books in one place.
 - Filter books by reading status:
   - All
@@ -53,7 +58,7 @@ The application follows an MVC-inspired architecture to separate the user interf
 
 ---
 
-## 🏗️ Architecture (MVC Pattern)
+## Architecture (MVC Pattern)
 
 BookBuddy follows an MVC-inspired architecture to keep the code organized and maintainable.
 
@@ -115,44 +120,46 @@ BookBuddy/
 └── README.md
 ```
 
-*Note: This is a simplified overview of the project structure. Your actual files may include additional components and configuration files.*
+_Note: This is a simplified overview of the project structure. Your actual files may include additional components and configuration files._
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-| Technology | Purpose |
-|---|---|
-| [React Native](https://reactnative.dev/) | Cross-platform mobile application development |
-| [Expo](https://expo.dev/) | Development platform and build tools |
-| [Expo Router](https://docs.expo.dev/router/introduction/) | File-based routing and navigation |
-| [TypeScript](https://www.typescriptlang.org/) | Type safety and maintainable code |
-| [Firebase Authentication](https://firebase.google.com/products/auth) | User registration and login |
-| [Cloud Firestore](https://firebase.google.com/products/firestore) | User profiles and reading library data |
-| [Open Library API](https://openlibrary.org/developers/api) | Book search and book information |
-| [Lucide React Native](https://lucide.dev/) | Icons |
-| [NativeWind](https://www.nativewind.dev/) | Utility-based styling, if configured in the project |
-| [Google Fonts - Poppins](https://fonts.google.com/specimen/Poppins) | Typography |
+| Technology                                                           | Version               | Purpose                                       |
+| -------------------------------------------------------------------- | --------------------- | --------------------------------------------- |
+| [React Native](https://reactnative.dev/)                             | 0.88.1                | Cross-platform mobile application development |
+| [Expo](https://expo.dev/)                                            | 58.0.25               | Development platform and build tools          |
+| [Expo Router](https://docs.expo.dev/router/introduction/)            | 58.0.31               | File-based routing and navigation             |
+| [TypeScript](https://www.typescriptlang.org/)                        | 6.0.3                 | Type safety and maintainable code             |
+| [Firebase Authentication](https://firebase.google.com/products/auth) | 13.3.0 (Firebase SDK) | User registration and login                   |
+| [Cloud Firestore](https://firebase.google.com/products/firestore)    | 13.3.0 (Firebase SDK) | User profiles and reading library data        |
+| [Open Library API](https://openlibrary.org/developers/api)           | External API          | Book search and book information              |
+| [Lucide React Native](https://lucide.dev/)                           | 1.74.0                | Icons                                         |
+| [NativeWind](https://www.nativewind.dev/)                            | 4.2.7                 | Utility-based styling                         |
+| [Google Fonts - Poppins](https://fonts.google.com/specimen/Poppins)  | 0.4.1                 | Typography                                    |
+| [Node.js](https://nodejs.org/)                                       | 26.13.1               | JavaScript runtime                            |
+| [Yarn](https://classic.yarnpkg.com/)                                 | 1.22.22               | Package management                            |
 
 ---
 
-## 🎨 Color Palette & Design
+## Color Palette & Design
 
 BookBuddy uses a calm, nature-inspired color palette to create a comfortable reading experience.
 
-| Color | Hex Value | Usage |
-|---|---|---|
-| Mint | `#EAF9E7` | Background and screen surfaces |
-| Light Green | `#C0E6BA` | Cards and avatar backgrounds |
-| Primary Green | `#4CA771` | Buttons and active states |
-| Dark Green | `#013237` | Headings and primary text |
-| Gray | `#8A9A91` | Secondary text |
-| Border | `#DCEBDD` | Borders and dividers |
-| Error | `#DC5252` | Error messages |
+| Color         | Hex Value | Usage                          |
+| ------------- | --------- | ------------------------------ |
+| Mint          | `#EAF9E7` | Background and screen surfaces |
+| Light Green   | `#C0E6BA` | Cards and avatar backgrounds   |
+| Primary Green | `#4CA771` | Buttons and active states      |
+| Dark Green    | `#013237` | Headings and primary text      |
+| Gray          | `#8A9A91` | Secondary text                 |
+| Border        | `#DCEBDD` | Borders and dividers           |
+| Error         | `#DC5252` | Error messages                 |
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to run BookBuddy on your local machine.
 
@@ -168,7 +175,7 @@ Make sure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone YOUR_REPOSITORY_URL
+git https://github.com/lamia-lam/React-native-app.git
 ```
 
 Move into the project directory:
@@ -217,19 +224,19 @@ Then:
 
 ---
 
-## 🧪 Useful Commands
+## Useful Commands
 
-| Command | Purpose |
-|---|---|
-| `yarn start` | Start the Expo development server |
-| `yarn start --clear` | Start Expo with a cleared cache |
-| `npx tsc --noEmit` | Check TypeScript errors |
-| `npx expo lint` | Run Expo linting, if configured |
-| `npx expo doctor` | Check project dependencies and configuration |
+| Command              | Purpose                                      |
+| -------------------- | -------------------------------------------- |
+| `yarn start`         | Start the Expo development server            |
+| `yarn start --clear` | Start Expo with a cleared cache              |
+| `npx tsc --noEmit`   | Check TypeScript errors                      |
+| `npx expo lint`      | Run Expo linting, if configured              |
+| `npx expo doctor`    | Check project dependencies and configuration |
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 Possible improvements for future versions include:
 
@@ -241,7 +248,32 @@ Possible improvements for future versions include:
 
 ---
 
-## 📄 License
+## App Screenshots
+
+### Authentication
+
+<p align="center">
+  <img src="assets/screenshots/login.png" width="220" alt="Login Screen" />
+  <img src="assets/screenshots/register.png" width="220" alt="Register Screen" />
+</p>
+
+### Home & Discovery
+
+<p align="center">
+  <img src="assets/screenshots/home.png" width="220" alt="Home Screen" />
+  <img src="assets/screenshots/discover.png" width="220" alt="Discover Screen" />
+</p>
+
+### Library & Profile
+
+<p align="center">
+  <img src="assets/screenshots/library.png" width="220" alt="Library Screen" />
+  <img src="assets/screenshots/profile.png" width="220" alt="Profile Screen" />
+</p>
+
+---
+
+## License
 
 This project is intended for learning and development purposes.
 

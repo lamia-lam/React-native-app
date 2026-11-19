@@ -7,7 +7,9 @@ import {
   User as FirebaseUser,
 } from "firebase/auth";
 
-import { auth } from "@/config/firebase";
+import { doc, getDoc } from "firebase/firestore";
+
+import { auth, db } from "@/config/firebase";
 import { logoutUser } from "@/services/authService";
 import { getLibraryBooks } from "@/services/libraryService";
 import { LibraryBook } from "@/models/Book";
@@ -16,18 +18,37 @@ export function useProfileController() {
   const router = useRouter();
 
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [fullName, setFullName] = useState("");
   const [books, setBooks] = useState<LibraryBook[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // Get logged-in user and their registered name
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+
+      if (currentUser) {
+        try {
+          const userDoc = await getDoc(
+            doc(db, "users", currentUser.uid)
+          );
+
+          if (userDoc.exists()) {
+            setFullName(userDoc.data().fullName || "");
+          }
+        } catch (error) {
+          console.log("Profile name error:", error);
+        }
+      } else {
+        setFullName("");
+      }
     });
 
     return unsubscribe;
   }, []);
 
+  // Load library books
   useEffect(() => {
     const loadBooks = async () => {
       try {
@@ -70,6 +91,7 @@ export function useProfileController() {
 
   return {
     user,
+    fullName,
     books,
     totalBooks,
     readingBooks,
