@@ -18,6 +18,7 @@ import BottomTabBar from "@/views/components/BottomTabBar";
 
 interface ProfileViewProps {
   user: FirebaseUser | null;
+  fullName: string;
   totalBooks: number;
   readingBooks: number;
   completedBooks: number;
@@ -30,6 +31,7 @@ interface ProfileViewProps {
 
 export default function ProfileView({
   user,
+  fullName,
   totalBooks,
   readingBooks,
   completedBooks,
@@ -39,8 +41,9 @@ export default function ProfileView({
   onEditProfile,
   onUploadProfilePicture,
 }: ProfileViewProps) {
-  const firstName =
-    user?.displayName?.split(" ")[0] ||
+  const displayName =
+    fullName?.trim() ||
+    user?.displayName ||
     user?.email?.split("@")[0] ||
     "Reader";
 
@@ -81,12 +84,12 @@ export default function ProfileView({
           >
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>
-                {firstName.charAt(0).toUpperCase()}
+                {displayName.charAt(0).toUpperCase()}
               </Text>
             </View>
           </Pressable>
 
-          <Text style={styles.name}>{firstName}</Text>
+          <Text style={styles.name}>{displayName}</Text>
 
           <Text style={styles.email}>
             {user?.email || "No email available"}
