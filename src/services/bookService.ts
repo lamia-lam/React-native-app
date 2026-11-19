@@ -1,3 +1,4 @@
+
 import {
   Book,
   OpenLibraryBook,
@@ -8,6 +9,25 @@ import {
 export type { Book };
 
 const BASE_URL = "https://openlibrary.org";
+
+const API_ERROR_MESSAGE = "Book service is temporarily unavailable.";
+
+// Handle API server unavailability
+const fetchFromAPI = async (url: string): Promise<Response> => {
+  let response: Response;
+
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    throw new Error(API_ERROR_MESSAGE);
+  }
+
+  if (response.status >= 500) {
+    throw new Error(API_ERROR_MESSAGE);
+  }
+
+  return response;
+};
 
 // Convert Open Library data into our Book format
 const formatBook = (item: OpenLibraryBook): Book => ({
@@ -22,7 +42,7 @@ const formatBook = (item: OpenLibraryBook): Book => ({
 
 // Get trending books
 export const getTrendingBooks = async (): Promise<Book[]> => {
-  const response = await fetch(
+  const response = await fetchFromAPI(
     `${BASE_URL}/trending/daily.json?limit=12`
   );
 
@@ -41,7 +61,7 @@ export const searchBooks = async (
 ): Promise<Book[]> => {
   if (!query.trim()) return [];
 
-  const response = await fetch(
+  const response = await fetchFromAPI(
     `${BASE_URL}/search.json?q=${encodeURIComponent(query)}&limit=20&fields=key,title,author_name,cover_i,first_publish_year`
   );
 
@@ -53,11 +73,12 @@ export const searchBooks = async (
 
   return (data.docs || []).map(formatBook);
 };
+
 // Get full details of a selected book
 export const getBookDetails = async (bookId: string) => {
   const formattedId = bookId.replace("/works/", "");
 
-  const response = await fetch(
+  const response = await fetchFromAPI(
     `${BASE_URL}/works/${formattedId}.json`
   );
 

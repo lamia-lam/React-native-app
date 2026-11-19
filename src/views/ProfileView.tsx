@@ -25,6 +25,7 @@ interface ProfileViewProps {
   onLogout: () => void;
   isLoggingOut: boolean;
   onEditProfile: () => void;
+  onUploadProfilePicture: () => void;
 }
 
 export default function ProfileView({
@@ -36,6 +37,7 @@ export default function ProfileView({
   onLogout,
   isLoggingOut,
   onEditProfile,
+  onUploadProfilePicture,
 }: ProfileViewProps) {
   const firstName =
     user?.displayName?.split(" ")[0] ||
@@ -73,11 +75,16 @@ export default function ProfileView({
       <View style={styles.content}>
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {firstName.charAt(0).toUpperCase()}
-            </Text>
-          </View>
+          <Pressable
+            onPress={onUploadProfilePicture}
+            hitSlop={10}
+          >
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>
+                {firstName.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          </Pressable>
 
           <Text style={styles.name}>{firstName}</Text>
 
@@ -143,11 +150,16 @@ export default function ProfileView({
             ]}
             onPress={onEditProfile}
           >
-           <Text style={[styles.menuLabel, { marginTop: 15 }]}>
-             Edit Profile
-           </Text>
+            <Text style={[styles.menuLabel, { marginTop: 15 }]}>
+              Edit Profile
+            </Text>
 
-            <Text style={[styles.chevron, { transform: [{ translateY: -27 }] }]}>
+            <Text
+              style={[
+                styles.chevron,
+                { transform: [{ translateY: -27 }] },
+              ]}
+            >
               ›
             </Text>
           </Pressable>
@@ -168,7 +180,12 @@ export default function ProfileView({
               {isLoggingOut ? "Logging out..." : "Log Out"}
             </Text>
 
-            <Text style={[styles.chevron, { transform: [{ translateY: -24 }] }]}>
+            <Text
+              style={[
+                styles.chevron,
+                { transform: [{ translateY: -24 }] },
+              ]}
+            >
               ›
             </Text>
           </Pressable>
@@ -317,7 +334,7 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
     fontSize: 20,
-    paddingTop:10,
+    paddingTop: 10,
     fontWeight: "600",
     color: "#174A36",
     textAlign: "left",

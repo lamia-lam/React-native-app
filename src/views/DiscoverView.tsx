@@ -23,6 +23,7 @@ interface DiscoverViewProps {
   handleSearch: () => void;
   searchResults: Book[];
   isSearching: boolean;
+  error: string;
   trendingBooks: Book[];
   isLoadingTrending: boolean;
   categories: string[];
@@ -37,6 +38,7 @@ export default function DiscoverView({
   handleSearch,
   searchResults,
   isSearching,
+  error,
   trendingBooks,
   isLoadingTrending,
   categories,
@@ -73,6 +75,13 @@ export default function DiscoverView({
             returnKeyType="search"
           />
         </View>
+
+        {/* API Error Message */}
+        {error !== "" && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
 
         {/* Categories */}
         <View style={styles.sectionHeader}>
@@ -132,11 +141,11 @@ export default function DiscoverView({
                   onPress={() => openBookDetails(book)}
                 />
               ))
-            ) : (
+            ) : error === "" ? (
               <Text style={styles.subtitle}>
                 No books found. Try another category or search.
               </Text>
-            )}
+            ) : null}
           </View>
         ) : null}
 
@@ -253,6 +262,20 @@ const styles = StyleSheet.create({
     fontFamily: typography.regular,
     fontSize: 13,
     color: COLORS.darkGreen,
+  },
+
+  errorContainer: {
+    backgroundColor: "#FCEAEA",
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+
+  errorText: {
+    fontFamily: typography.medium,
+    fontSize: 13,
+    color: "#C0392B",
+    textAlign: "center",
   },
 
   sectionHeader: {

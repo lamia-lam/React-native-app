@@ -13,12 +13,15 @@ const CATEGORIES = [
   "Self-help",
 ];
 
+const API_ERROR_MESSAGE = "Book service is temporarily unavailable.";
+
 export function useDiscoverController() {
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Book[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState("");
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -29,12 +32,14 @@ export function useDiscoverController() {
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
+      setError("");
       setSelectedCategory(null);
       return;
     }
 
     try {
       setIsSearching(true);
+      setError("");
       setSelectedCategory(null);
 
       const results = await searchBooks(searchQuery);
@@ -42,6 +47,10 @@ export function useDiscoverController() {
     } catch (error) {
       console.log("Search error:", error);
       setSearchResults([]);
+
+      if (error instanceof Error && error.message === API_ERROR_MESSAGE) {
+        setError(API_ERROR_MESSAGE);
+      }
     } finally {
       setIsSearching(false);
     }
@@ -55,6 +64,10 @@ export function useDiscoverController() {
         setTrendingBooks(results);
       } catch (error) {
         console.log("Trending books error:", error);
+
+        if (error instanceof Error && error.message === API_ERROR_MESSAGE) {
+          setError(API_ERROR_MESSAGE);
+        }
       } finally {
         setIsLoadingTrending(false);
       }
@@ -67,6 +80,7 @@ export function useDiscoverController() {
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
     setSelectedCategory(null);
+    setError("");
 
     if (!text.trim()) {
       setSearchResults([]);
@@ -79,12 +93,17 @@ export function useDiscoverController() {
       setSelectedCategory(category);
       setSearchQuery(category);
       setIsSearching(true);
+      setError("");
 
       const results = await searchBooks(category);
       setSearchResults(results);
     } catch (error) {
       console.log("Category search error:", error);
       setSearchResults([]);
+
+      if (error instanceof Error && error.message === API_ERROR_MESSAGE) {
+        setError(API_ERROR_MESSAGE);
+      }
     } finally {
       setIsSearching(false);
     }
@@ -117,6 +136,7 @@ export function useDiscoverController() {
     handleSearch,
     searchResults,
     isSearching,
+    error,
 
     trendingBooks,
     isLoadingTrending,
