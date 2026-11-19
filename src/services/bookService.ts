@@ -1,29 +1,33 @@
 
+import {
+  Book,
+  OpenLibraryBook,
+  TrendingResponse,
+  SearchResponse,
+} from "@/models/Book";
+
+export type { Book };
+
 const BASE_URL = "https://openlibrary.org";
 
-export interface Book {
-  id: string;
-  title: string;
-  author: string;
-  coverUrl: string | null;
-  publishYear?: number;
-}
+const API_ERROR_MESSAGE = "Book service is temporarily unavailable.";
 
-interface OpenLibraryBook {
-  key: string;
-  title: string;
-  author_name?: string[];
-  cover_i?: number;
-  first_publish_year?: number;
-}
+// Handle API server unavailability
+const fetchFromAPI = async (url: string): Promise<Response> => {
+  let response: Response;
 
-interface TrendingResponse {
-  works: OpenLibraryBook[];
-}
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    throw new Error(API_ERROR_MESSAGE);
+  }
 
-interface SearchResponse {
-  docs: OpenLibraryBook[];
-}
+  if (response.status >= 500) {
+    throw new Error(API_ERROR_MESSAGE);
+  }
+
+  return response;
+};
 
 // Convert Open Library data into our Book format
 const formatBook = (item: OpenLibraryBook): Book => ({
@@ -38,7 +42,7 @@ const formatBook = (item: OpenLibraryBook): Book => ({
 
 // Get trending books
 export const getTrendingBooks = async (): Promise<Book[]> => {
-  const response = await fetch(
+  const response = await fetchFromAPI(
     `${BASE_URL}/trending/daily.json?limit=12`
   );
 
@@ -57,7 +61,7 @@ export const searchBooks = async (
 ): Promise<Book[]> => {
   if (!query.trim()) return [];
 
-  const response = await fetch(
+  const response = await fetchFromAPI(
     `${BASE_URL}/search.json?q=${encodeURIComponent(query)}&limit=20&fields=key,title,author_name,cover_i,first_publish_year`
   );
 
@@ -68,4 +72,30 @@ export const searchBooks = async (
   const data: SearchResponse = await response.json();
 
   return (data.docs || []).map(formatBook);
+};
+
+// Get full details of a selected book
+export const getBookDetails = async (bookId: string) => {
+  const formattedId = bookId.replace("/works/", "");
+
+  const response = await fetchFromAPI(
+    `${BASE_URL}/works/${formattedId}.json`
+  );
+
+  if (!response.ok) {
+    throw new Error("Unable to fetch book details.");
+  }
+
+  const data = await response.json();
+
+  return {
+    id: bookId,
+    title: data.title || "Unknown Title",
+    description:
+      typeof data.description === "string"
+        ? data.description
+        : data.description?.value || "No description available.",
+    subjects: data.subjects || [],
+    firstPublishDate: data.first_publish_date || "Not available",
+  };
 };
